@@ -1,4 +1,3 @@
-/* Reset básico */
 * {
     margin: 0;
     padding: 0;
@@ -23,7 +22,7 @@ body {
 
 .container {
     padding: 1rem;
-    max-width: 500px; /* Tamaño máximo para que parezca móvil en PC */
+    max-width: 500px;
     margin: 0 auto;
     flex: 1;
 }
@@ -37,21 +36,20 @@ body {
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-.temp-main {
+.tempMain {
     font-size: 3rem;
     font-weight: bold;
     color: #4a90e2;
 }
 
-/* Lista de horas con scroll horizontal */
-.hourly-list {
+.hourlyList {
     display: flex;
     overflow-x: auto;
     gap: 1rem;
     padding: 1rem 0;
 }
 
-.hourly-item {
+.hourlyItem {
     min-width: 80px;
     background: white;
     padding: 1rem;
@@ -64,4 +62,40 @@ body {
     padding: 1rem;
     font-size: 0.8rem;
     color: #666;
+}
+
+#dailyContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.dailyItem {
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+.dayName {
+    font-weight: bold;
+    color: #555;
+    width: 50px;
+}
+
+.dayIcon {
+    font-size: 1.2rem;
+}
+
+.dayTemp {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.dayTemp strong {
+    color: #333;
 }
