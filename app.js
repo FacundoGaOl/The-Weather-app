@@ -120,4 +120,25 @@ function translateWeatherCode(code) {
     return codes[code] || "Clima variado";
 }
 
+document.getElementById('searchBtn').addEventListener('click', async () => {
+    const city = document.getElementById('cityInput').value;
+    if (!city) return;
+
+    try {
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=es&format=json`;
+        const res = await fetch(geoUrl);
+        const data = await res.json();
+
+        if (data.results && data.results.length > 0) {
+            const { latitude, longitude, name } = data.results[0];
+            getWeatherData(latitude, longitude);
+            document.getElementById('cityName').textContent = name;
+        } else {
+            alert("Ciudad no encontrada");
+        }
+    } catch (e) {
+        console.error("Error buscando ciudad", e);
+    }
+});
+
 initApp();
