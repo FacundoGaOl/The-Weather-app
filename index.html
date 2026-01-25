@@ -7,12 +7,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="header">
+    <div id="loadingScreen" class="loadingScreen">
+        <div class="spinner"></div>
+        <p>Cargando clima...</p>
+    </div>
+    
+    <header class="mainHeader">
         <h1>☁️ WeatherApp</h1>
         <p id="cityName">Detectando ubicación...</p>
     </header>
 
-    <main class="container">
+    <main class="mainContainer">
         <section id="currentWeather" class="card">
             <h2>Hoy</h2>
             <div class="tempMain">

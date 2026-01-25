@@ -42,6 +42,12 @@ function updateUI(data) {
     document.getElementById('mainTemp').textContent = Math.round(data.current.temperature_2m);
     const currentCode = data.current.weather_code;
     document.getElementById('weatherDescription').textContent = translateWeatherCode(currentCode);
+    document.getElementById('mainTemp').textContent = Math.round(data.current.temperature_2m);
+
+    const loader = document.getElementById('loadingScreen');
+    setTimeout(() => {
+        loader.classList.add('hidden');
+    }, 800);
 
     const hourlyContainer = document.getElementById('hourlyContainer');
     hourlyContainer.innerHTML = ""; 
