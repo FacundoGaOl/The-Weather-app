@@ -19,17 +19,22 @@ async function initApp() {
 }
 
 async function getWeatherData(lat, lon) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+    const cityUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
+try {
+        const [weatherRes, cityRes] = await Promise.all([
+            fetch(weatherUrl),
+            fetch(cityUrl)
+        ]);
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Error en la API");
+        const weatherData = await weatherRes.json();
+        const cityData = await cityRes.json();
+
+        document.getElementById('cityName').textContent = cityData.city || cityData.locality || "Ubicación desconocida";
         
-        const data = await response.json();
-        updateUI(data);
+        updateUI(weatherData);
     } catch (error) {
-        console.error("Error:", error);
-        document.getElementById('weather-description').textContent = "Error al cargar.";
+        console.error("Error al obtener datos:", error);
     }
 }
 
