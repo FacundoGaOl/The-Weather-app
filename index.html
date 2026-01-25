@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <h1>☁️ WeatherApp</h1>
+        <p id="city-name">Detectando ubicación...</p>
+    </header>
+
+    <main class="container">
+        <section id="current-weather" class="card">
+            <h2>Hoy</h2>
+            <div class="temp-main">
+                <span id="main-temp">--</span>°C
+            </div>
+            <p id="weather-description">Cargando datos...</p>
+        </section>
+
+        <section class="forecast-hourly">
+            <h3>Próximas horas</h3>
+            <div id="hourly-container" class="hourly-list">
+                </div>
+        </section>
+
+        <section class="forecast-daily">
+            <h3>Próximos 7 días</h3>
+            <div id="daily-container">
+                </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Datos provistos por <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a></p>
+        <p>Desarrollado por [Tu Nombre]</p>
+    </footer>
+
+    <script src="js/app.js" defer></script>
+</body>
+</html>
+</body>
+</html>
