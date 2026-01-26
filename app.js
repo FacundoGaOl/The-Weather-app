@@ -83,6 +83,8 @@ function updateUI(data) {
             </div>
         `;
     }
+
+    updateChart(data.hourly.time, data.hourly.temperature_2m);
 }
 
 function formatDay(dateStr) {
@@ -208,7 +210,6 @@ async function loadCityByName(cityName) {
         if (data.results && data.results.length > 0) {
             const { latitude, longitude, name } = data.results[0];
             
-            // Actualizamos el nombre en la interfaz y cargamos el clima
             document.getElementById('cityName').textContent = name;
             await getWeatherData(latitude, longitude);
         } else {
@@ -222,5 +223,53 @@ async function loadCityByName(cityName) {
 }
 
 document.getElementById('favBtn').addEventListener('click', toggleFavorite);
+
+
+let myChart = null; 
+
+function updateChart(times, temperatures) {
+    const ctx = document.getElementById('tempChart').getContext('2d');
+
+    if (myChart) {
+        myChart.destroy();
+    }
+
+    const labels = times.slice(0, 24).map(t => t.split("T")[1]);
+    const data = temperatures.slice(0, 24);
+
+    myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Temperatura (°C)',
+                data: data,
+                borderColor: '#4b6cb7',
+                backgroundColor: 'rgba(75, 108, 183, 0.2)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: false },
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        callback: function(val, index) {
+                            return index % 4 === 0 ? this.getLabelForValue(val) : '';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
 
 initApp();

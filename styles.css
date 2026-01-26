@@ -189,3 +189,24 @@ body {
 }
 
 .hidden { display: none; }
+
+.chartSection {
+    padding: 15px;
+    margin: 15px 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.chartWrapper {
+    position: relative;
+    width: 100%;
+    height: 250px;
+}
+
+.chartSection h3 {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 15px;
+    text-align: left;
+}
