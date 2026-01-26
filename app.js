@@ -155,13 +155,11 @@ function updateBackground(code) {
     else body.classList.add('bg-default');
 }
 
-// 1. Estado de favoritos
+
 let favorites = JSON.parse(localStorage.getItem('weatherFavs')) || [];
 
-// 2. Función para guardar/quitar favorito
 function toggleFavorite() {
     const cityName = document.getElementById('cityName').textContent;
-    // Evitamos guardar si aún no ha cargado la ciudad
     if (cityName === "Detectando ubicación..." || cityName === "Ubicación desconocida") return;
 
     const index = favorites.indexOf(cityName);
@@ -175,7 +173,6 @@ function toggleFavorite() {
     renderFavorites();
 }
 
-// 3. Función para pintar los favoritos en pantalla
 function renderFavorites() {
     const container = document.getElementById('favoritesSection');
     const list = document.getElementById('favoritesList');
@@ -189,17 +186,41 @@ function renderFavorites() {
     list.innerHTML = '';
 
     favorites.forEach(city => {
-        const span = document.createElement('span');
-        span.className = 'fav-item';
-        span.textContent = city;
-        // Al hacer click en un favorito, podríamos buscar esa ciudad (si implementas el buscador)
-        list.appendChild(span);
+        const button = document.createElement('button');
+        button.className = 'favItem';
+        button.textContent = city;
+        
+        button.onclick = () => loadCityByName(city);
+        
+        list.appendChild(button);
     });
 }
 
-// 4. Inicializar eventos
-document.getElementById('favBtn').addEventListener('click', toggleFavorite);
+async function loadCityByName(cityName) {
+    const loader = document.getElementById('loadingScreen');
+    loader.classList.remove('hidden'); // Mostrar carga
 
-// Llama a renderFavorites() dentro de tu función initApp() para que carguen al abrir
+    try {
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=es&format=json`;
+        const res = await fetch(geoUrl);
+        const data = await res.json();
+
+        if (data.results && data.results.length > 0) {
+            const { latitude, longitude, name } = data.results[0];
+            
+            // Actualizamos el nombre en la interfaz y cargamos el clima
+            document.getElementById('cityName').textContent = name;
+            await getWeatherData(latitude, longitude);
+        } else {
+            alert("No se encontraron datos para esta ciudad.");
+            loader.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error("Error al buscar la ciudad favorita:", error);
+        loader.classList.add('hidden');
+    }
+}
+
+document.getElementById('favBtn').addEventListener('click', toggleFavorite);
 
 initApp();

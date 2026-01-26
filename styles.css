@@ -169,12 +169,23 @@ body {
 }
 
 .favItem {
-    background: white;
-    color: #333;
-    padding: 8px 15px;
-    border-radius: 20px;
-    white-space: nowrap;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.favItem:hover {
+    background: #e0f2fe; /* Color azul clarito al pasar el ratón */
+    transform: translateY(-2px);
+}
+
+.favItem:active {
+    transform: scale(0.95);
 }
 
 .hidden { display: none; }
