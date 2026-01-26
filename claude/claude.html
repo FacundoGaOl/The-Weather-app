@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App del Tiempo Avanzada</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Tarjeta principal del tiempo -->
+        <main class="weather-main">
+            <div id="loading" class="loading">
+                <p>Cargando datos del tiempo...</p>
+            </div>
+            
+            <div id="weather-display" class="weather-display hidden">
+                <!-- Datos actuales -->
+                <div class="current-weather">
+                    <h2 class="city-name" id="city-name">--</h2>
+                    <div class="current-date" id="current-date">--</div>
+                    <div class="temperature" id="temperature">--°C</div>
+                    <div class="weather-description" id="description">--</div>
+                    
+                    <div class="weather-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Sensación térmica</span>
+                            <span class="detail-value" id="feels-like">--°C</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Humedad</span>
+                            <span class="detail-value" id="humidity">--%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Viento</span>
+                            <span class="detail-value" id="wind">-- km/h</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Precipitación</span>
+                            <span class="detail-value" id="precipitation">-- mm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial últimos días -->
+                <div class="history-section">
+                    <h3>📊 Últimos 7 días</h3>
+                    <div id="history-chart" class="history-chart">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Pronóstico próximos 3 días -->
+                <div class="forecast-section">
+                    <h3>🔮 Pronóstico 3 días</h3>
+                    <div id="forecast-container" class="forecast-container">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar derecho -->
+        <aside class="sidebar">
+            <!-- Estadísticas del caché -->
+            <div class="sidebar-section cache-stats">
+                <h3>💾 Caché</h3>
+                <div id="cache-stats" class="stats-content">
+                    <div class="stat-item">
+                        <span>Hit Rate:</span>
+                        <span id="hit-rate">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Entradas:</span>
+                        <span id="cache-entries">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Tamaño:</span>
+                        <span id="cache-size">0 KB</span>
+                    </div>
+                </div>
+                <button id="btn-clear-cache" class="btn-small">Limpiar Caché</button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>📍 Mi ubicación</h3>
+                <div id="current-location" class="location-card">
+                    <p class="location-name">Detectando...</p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🌍 Ubicaciones guardadas</h3>
+                <button id="btn-add-location" class="btn-add">+ Añadir ubicación</button>
+                <div id="saved-locations" class="saved-locations">
+                    <!-- Aquí se cargarán las ubicaciones guardadas -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Modal para añadir ubicación -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Añadir nueva ubicación</h3>
+                <button id="btn-close-modal" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input 
+                    type="text" 
+                    id="input-location" 
+                    placeholder="Nombre de la ciudad"
+                    class="input-location"
+                >
+                <button id="btn-search-location" class="btn-search">Buscar</button>
+                
+                <div id="search-results" class="search-results hidden">
+                    <!-- Aquí aparecerán los resultados de búsqueda -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="claude.js"></script>
+</body>
+</html>
