@@ -39,10 +39,12 @@ try {
 }
 
 function updateUI(data) {
-    document.getElementById('mainTemp').textContent = Math.round(data.current.temperature_2m);
     const currentCode = data.current.weather_code;
-    document.getElementById('weatherDescription').textContent = translateWeatherCode(currentCode);
+
     document.getElementById('mainTemp').textContent = Math.round(data.current.temperature_2m);
+    document.getElementById('weatherDescription').textContent = translateWeatherCode(currentCode);
+
+    updateBackground(currentCode);
 
     const loader = document.getElementById('loadingScreen');
     setTimeout(() => {
@@ -50,8 +52,10 @@ function updateUI(data) {
     }, 800);
 
     const hourlyContainer = document.getElementById('hourlyContainer');
-    hourlyContainer.innerHTML = ""; 
-    for (let i = 0; i < 6; i++) {
+    hourlyContainer.innerHTML = "";
+    const now = new Date().getHours();
+    for (let i = now; i < now + 6; i++) {
+        if (!data.hourly.time[i]) break;
         const time = data.hourly.time[i].split("T")[1];
         const temp = Math.round(data.hourly.temperature_2m[i]);
         
@@ -140,5 +144,62 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
         console.error("Error buscando ciudad", e);
     }
 });
+
+function updateBackground(code) {
+    const body = document.body;
+    body.className = ""; 
+    
+    if (code === 0) body.classList.add('bg-sunny');
+    else if (code >= 1 && code <= 3) body.classList.add('bg-cloudy');
+    else if (code >= 51 && code <= 67) body.classList.add('bg-rainy');
+    else body.classList.add('bg-default');
+}
+
+// 1. Estado de favoritos
+let favorites = JSON.parse(localStorage.getItem('weatherFavs')) || [];
+
+// 2. Función para guardar/quitar favorito
+function toggleFavorite() {
+    const cityName = document.getElementById('cityName').textContent;
+    // Evitamos guardar si aún no ha cargado la ciudad
+    if (cityName === "Detectando ubicación..." || cityName === "Ubicación desconocida") return;
+
+    const index = favorites.indexOf(cityName);
+    if (index === -1) {
+        favorites.push(cityName);
+    } else {
+        favorites.splice(index, 1);
+    }
+
+    localStorage.setItem('weatherFavs', JSON.stringify(favorites));
+    renderFavorites();
+}
+
+// 3. Función para pintar los favoritos en pantalla
+function renderFavorites() {
+    const container = document.getElementById('favoritesSection');
+    const list = document.getElementById('favoritesList');
+    
+    if (favorites.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+
+    container.classList.remove('hidden');
+    list.innerHTML = '';
+
+    favorites.forEach(city => {
+        const span = document.createElement('span');
+        span.className = 'fav-item';
+        span.textContent = city;
+        // Al hacer click en un favorito, podríamos buscar esa ciudad (si implementas el buscador)
+        list.appendChild(span);
+    });
+}
+
+// 4. Inicializar eventos
+document.getElementById('favBtn').addEventListener('click', toggleFavorite);
+
+// Llama a renderFavorites() dentro de tu función initApp() para que carguen al abrir
 
 initApp();

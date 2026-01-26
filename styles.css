@@ -134,3 +134,47 @@ body {
 .dayTemp strong {
     color: #333;
 }
+
+.bg-sunny { background: linear-gradient(180deg, #ffce67 0%, #ffa200 100%); }
+.bg-cloudy { background: linear-gradient(180deg, #bdc3c7 0%, #2c3e50 100%); }
+.bg-rainy { background: linear-gradient(180deg, #4b6cb7 0%, #182848 100%); }
+.bg-default { background: #f0f0f0; } 
+
+.locationRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btnIcon {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.favoritesContainer {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.favList {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.favItem {
+    background: white;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.hidden { display: none; }

@@ -12,10 +12,18 @@
         <p>Cargando clima...</p>
     </div>
     
-    <header class="mainHeader">
-        <h1>☁️ WeatherApp</h1>
+<header class="mainHeader">
+    <h1>☁️ WeatherApp</h1>
+    <div class="locationRow">
         <p id="cityName">Detectando ubicación...</p>
-    </header>
+        <button id="favBtn" class="btnIcon">⭐</button>
+    </div>
+</header>
+
+<section id="favoritesSection" class="favorites-container hidden">
+    <h3>Tus Favoritos</h3>
+    <div id="favoritesList" class="favList"></div>
+</section>
 
     <main class="mainContainer">
         <div class="search-box">
