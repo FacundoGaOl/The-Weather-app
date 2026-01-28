@@ -1,69 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="loadingScreen" class="loadingScreen">
-        <div class="spinner"></div>
-        <p>Cargando clima...</p>
-    </div>
-    
-<header class="mainHeader">
-    <h1>☁️ WeatherApp</h1>
-    <div class="locationRow">
-        <p id="cityName">Detectando ubicación...</p>
-        <button id="favBtn" class="btnIcon">⭐</button>
-    </div>
-</header>
+    <header>
+        <h3>El tiempo en</h3>
+        <h1>Temple</h1>
+        <p>Favoritos</p>
+    </header>
+    <main>
+        <section>
+            <div>
+                <h1>Temperatura actuar</h1>
+                <div>
+                    <p>humedad</p>
+                    <p>viento velocidad</p>
+                    <p>viento dirección</p>
+                    <p>indice uv</p>
 
-<section id="favoritesSection" class="favorites-container hidden">
-    <h3>Tus Favoritos</h3>
-    <div id="favoritesList" class="favList"></div>
-</section>
-
-    <main class="mainContainer">
-        <div class="search-box">
-            <input type="text" id="cityInput" placeholder="Busca una ciudad...">
-            <button id="searchBtn">🔍</button>
-        </div>
-        <section id="currentWeather" class="card">
-            <h2>Hoy</h2>
-            <div class="tempMain">
-                <span id="mainTemp">--</span>°C
-            </div>
-            <p id="weatherDescription">Cargando datos...</p>
-        </section>
-
-        <section class="forecastHourly">
-            <h3>Próximas horas</h3>
-            <div id="hourlyContainer" class="hourlyList">
                 </div>
-        </section>
-
-        <section class="forecastDaily">
-            <h3>Próximos 7 días</h3>
-            <div id="dailyContainer">
-                </div>
-        </section>
-
-        <section class="card chart-section">
-            <h3>Tendencia Térmica (24h)</h3>
-            <div class="chart-wrapper">
-                <canvas id="tempChart"></canvas>
             </div>
         </section>
     </main>
-
-    <footer class="footer">
-        <p>Datos provistos por <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a></p>
-        <p>Desarrollado por [Tu Nombre]</p>
+    <footer>
+        <p>Datos de <a href="https://open-meteo.com/"> Open Meteo</a></p>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="app.js"></script>
 </body>
 </html>
