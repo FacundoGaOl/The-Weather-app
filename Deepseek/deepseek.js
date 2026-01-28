@@ -58,7 +58,6 @@ async function getWeatherData(latitude, longitude) {
     }
 }
 
-// Traducir códigos de tiempo de Open-Meteo
 function getWeatherDescription(code) {
     const weatherCodes = {
         0: "Cielo despejado",
@@ -347,8 +346,8 @@ function displayFavorites() {
     
     favorites.forEach((fav, index) => {
         const isCurrent = currentCityData && 
-                         fav.name === currentCityData.name && 
-                         fav.country === currentCityData.country;
+                            fav.name === currentCityData.name && 
+                            fav.country === currentCityData.country;
         
         html += `
             <div class="favorite-city ${isCurrent ? 'current-favorite' : ''}">
@@ -508,7 +507,7 @@ function displayCurrentWeather(data, cityName, country) {
                 <div class="current-city-header">
                     <div class="city-name">${cityName}, ${country}</div>
                     <div class="favorite-star" onclick="toggleFavorite()" 
-                         title="${isCityFavorite(cityName, country) ? 'En favoritos - Click para eliminar' : 'Añadir a favoritos'}">
+                            title="${isCityFavorite(cityName, country) ? 'En favoritos - Click para eliminar' : 'Añadir a favoritos'}">
                         <i class="fas ${isCityFavorite(cityName, country) ? 'fa-star' : 'fa-star'}"></i>
                     </div>
                 </div>

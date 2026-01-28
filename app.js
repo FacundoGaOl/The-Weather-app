@@ -2,6 +2,9 @@ const defaultLat = 40.4168;
 const defaultLon = -3.7038;
 
 async function initApp() {
+    // 1. Dibujar los favoritos que ya existan en localStorage
+    renderFavorites();
+
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -9,9 +12,10 @@ async function initApp() {
                 getWeatherData(latitude, longitude);
             },
             (error) => {
-                console.warn("Permiso de ubicación denegado, usando Madrid por defecto.");
+                console.warn("Permiso denegado o error de ubicación, usando Madrid.");
                 getWeatherData(defaultLat, defaultLon);
-            }
+            },
+            { timeout: 5000 } // Si en 5 segundos no responde, salta al error (Madrid)
         );
     } else {
         getWeatherData(defaultLat, defaultLon);
@@ -21,7 +25,7 @@ async function initApp() {
 async function getWeatherData(lat, lon) {
     const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
     const cityUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
-try {
+    try {
         const [weatherRes, cityRes] = await Promise.all([
             fetch(weatherUrl),
             fetch(cityUrl)
@@ -35,6 +39,8 @@ try {
         updateUI(weatherData);
     } catch (error) {
         console.error("Error al obtener datos:", error);
+        document.getElementById('loadingScreen').classList.add('hidden');
+        alert("Error de conexión. Inténtalo de nuevo.");
     }
 }
 
