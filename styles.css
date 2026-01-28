@@ -53,12 +53,26 @@ button {
     font-size: 16px;
 }
 
-button:hover { background: #4338ca; }
-#locationBtn { background: #10b981; }
-#locationBtn:hover { background: #0da271; }
+button:hover { 
+    background: #4338ca; 
+}
 
-.favoritesSection { margin-bottom: 25px; }
-.favoritesSection h3 { margin-bottom: 10px; color: #444; }
+.locationBtn { 
+    background: #10b981; 
+}
+
+.locationBtn:hover { 
+    background: #0da271; 
+}
+
+.favoritesSection { 
+    margin-bottom: 25px; 
+}
+
+.favoritesSection h3 { 
+    margin-bottom: 10px; 
+    color: #444; 
+}
 
 #favoritesList {
     display: grid;

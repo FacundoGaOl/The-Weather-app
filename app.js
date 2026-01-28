@@ -1,9 +1,7 @@
-// =============== CONFIGURACIÓN ===============
-const API_BASE = 'https://api.open-meteo.com/v1';
-const GEO_API = 'https://geocoding-api.open-meteo.com/v1';
-const STORAGE_KEY = 'weatherFavorites';
+const apiBase = 'https://api.open-meteo.com/v1';
+const geoApi = 'https://geocoding-api.open-meteo.com/v1';
+const storageKey = 'weatherFavorites';
 
-// =============== CACHE DE ELEMENTOS ===============
 const elements = {
     cityInput: document.getElementById('cityInput'),
     searchBtn: document.getElementById('searchBtn'),
@@ -16,11 +14,10 @@ const elements = {
 
 let currentCity = null;
 
-// =============== UTILIDADES ===============
 const showLoading = (show) => elements.loading.style.display = show ? 'block' : 'none';
 
-const getFavorites = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-const saveFavorites = (favs) => localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
+const getFavorites = () => JSON.parse(localStorage.getItem(storageKey) || '[]');
+const saveFavorites = (favs) => localStorage.setItem(storageKey, JSON.stringify(favs));
 
 const weatherIcons = {
     0: '☀️', 1: '⛅', 2: '⛅', 3: '☁️',
@@ -32,36 +29,34 @@ const weatherIcons = {
     95: '⛈️', 96: '⛈️', 99: '⛈️'
 };
 
-// =============== FUNCIONES API ===============
 async function getCityCoords(city) {
-    const res = await fetch(`${GEO_API}/search?name=${city}&count=1&language=es`);
+    const res = await fetch(`${geoApi}/search?name=${city}&count=1&language=es`);
     const data = await res.json();
     if (!data.results?.[0]) throw new Error('Ciudad no encontrada');
     return data.results[0];
 }
 
 async function getWeather(lat, lon) {
-    const url = `${API_BASE}/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`;
+    const url = `${apiBase}/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`;
     const res = await fetch(url);
     return await res.json();
 }
 
-// =============== RENDERIZADO ===============
 function renderCurrentWeather(data, cityInfo) {
     const w = data.current;
     currentCity = { ...cityInfo, temp: Math.round(w.temperature_2m) };
     
     elements.currentWeather.innerHTML = `
-        <div class="weather-info">
+        <div class="weatherInfo">
             <div>
-                <div class="city-name">${cityInfo.name}, ${cityInfo.country}</div>
-                <div class="temp-main">${Math.round(w.temperature_2m)}°C</div>
-                <div>${weatherIcons[w.weather_code] || '🌀'}</div>
+                <div class="cityName">${cityInfo.name}, ${cityInfo.country}</div>
+                <div class="tempMain">${Math.round(w.temperature_2m)}°C</div>
+                <div>${weatherIcons[w.weather_code]}</div>
                 <button onclick="toggleFavorite()" class="fav-btn">
-                    ${isFavorite(cityInfo.name, cityInfo.country) ? '❤️ En favoritos' : '🤍 Añadir a favoritos'}
+                    ${isFavorite(cityInfo.name, cityInfo.country) ? 'En favoritos' : 'Añadir a favoritos'}
                 </button>
             </div>
-            <div class="details-grid">
+            <div class="detailsGrid">
                 <div class="detail">Sensación: ${Math.round(w.apparent_temperature)}°C</div>
                 <div class="detail">Humedad: ${w.relative_humidity_2m}%</div>
                 <div class="detail">Viento: ${Math.round(w.wind_speed_10m)} km/h</div>
@@ -76,10 +71,10 @@ function renderForecast(data) {
     let html = '';
     
     data.daily.time.forEach((date, i) => {
-        if (i > 0 && i < 6) { // Mostrar próximos 5 días (no hoy)
+        if (i > 0 && i < 6) {
             const dayName = days[new Date(date).getDay()];
             html += `
-                <div class="forecast-day">
+                <div class="forecastDay">
                     <div><strong>${dayName}</strong></div>
                     <div>${weatherIcons[data.daily.weather_code[i]] || '🌀'}</div>
                     <div>${Math.round(data.daily.temperature_2m_max[i])}°</div>
@@ -92,7 +87,6 @@ function renderForecast(data) {
     elements.forecastDays.innerHTML = html;
 }
 
-// =============== FAVORITOS ===============
 function isFavorite(name, country) {
     return getFavorites().some(f => f.name === name && f.country === country);
 }
@@ -106,13 +100,13 @@ function toggleFavorite() {
     
     if (exists > -1) {
         favs.splice(exists, 1);
-        alert(`❌ ${currentCity.name} eliminado de favoritos`);
+        alert(`${currentCity.name} eliminado de favoritos`);
     } else {
         favs.push({
             ...currentCity,
             added: new Date().toISOString()
         });
-        alert(`⭐ ${currentCity.name} añadido a favoritos!`);
+        alert(`${currentCity.name} añadido a favoritos!`);
     }
     
     saveFavorites(favs);
@@ -124,12 +118,12 @@ function renderFavorites() {
     const favs = getFavorites();
     
     if (favs.length === 0) {
-        elements.favoritesList.innerHTML = '<p style="color:#666">No hay ciudades favoritas</p>';
+        elements.favoritesList.innerHTML = '<p>No hay ciudades favoritas</p>';
         return;
     }
     
     elements.favoritesList.innerHTML = favs.map(fav => `
-        <div class="favorite-item">
+        <div class="favoriteItem">
             <div>
                 <strong>${fav.name}</strong><br>
                 <small>${fav.country} • ${fav.temp}°C</small>
@@ -157,7 +151,6 @@ function removeFavorite(name, country) {
     renderFavorites();
 }
 
-// =============== FUNCIONES PRINCIPALES ===============
 async function searchWeather() {
     const city = elements.cityInput.value.trim();
     if (!city) return alert('Escribe una ciudad');
@@ -172,7 +165,7 @@ async function searchWeather() {
         showLoading(false);
     } catch (err) {
         showLoading(false);
-        elements.currentWeather.innerHTML = `<div style="color:#ef4444; text-align:center; padding:20px;">Error: ${err.message}</div>`;
+        elements.currentWeather.innerHTML = `<p>Error: ${err.message}</p>`;
     }
 }
 
@@ -184,8 +177,7 @@ function getLocationWeather() {
             showLoading(true);
             const { latitude, longitude } = pos.coords;
             
-            // Obtener nombre de la ubicación
-            const res = await fetch(`${GEO_API}/reverse?latitude=${latitude}&longitude=${longitude}&language=es`);
+            const res = await fetch(`${geoApi}/reverse?latitude=${latitude}&longitude=${longitude}&language=es`);
             const data = await res.json();
             const cityInfo = data.results?.[0] || { name: 'Tu ubicación', country: '' };
             
@@ -202,7 +194,6 @@ function getLocationWeather() {
     }, () => alert('Permiso de ubicación denegado'));
 }
 
-// =============== INICIALIZACIÓN ===============
 elements.searchBtn.addEventListener('click', searchWeather);
 elements.locationBtn.addEventListener('click', getLocationWeather);
 elements.cityInput.addEventListener('keypress', e => e.key === 'Enter' && searchWeather());
