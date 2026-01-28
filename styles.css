@@ -1,208 +1,150 @@
-* {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.loadingScreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; 
-    transition: opacity 0.5s ease;
-}
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #4a90e2;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 10px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background-color: #f0f2f5;
-    color: #333;
-    display: flex;
-    flex-direction: column;
+    font-family:'Segoe UI', "Roboto", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
+    padding: 20px;
 }
 
-.mainHeader {
-    background-color: #4a90e2;
-    color: white;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.mainContainer {
-    padding: 1rem;
-    max-width: 500px;
+.container {
+    max-width: 800px;
     margin: 0 auto;
-    flex: 1;
-}
-
-.card {
     background: white;
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+header { 
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 25px; 
 }
-
-.tempMain {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #4a90e2;
+header h1 { 
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 2rem;
 }
-
-.hourlyList {
-    display: flex;
-    overflow-x: auto;
-    gap: 1rem;
-    padding: 1rem 0;
-}
-
-.hourlyItem {
-    min-width: 80px;
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.footer {
-    text-align: center;
-    padding: 1rem;
-    font-size: 0.8rem;
+.subtitle {
     color: #666;
 }
 
-#dailyContainer {
+.searchBox {
     display: flex;
-    flex-direction: column;
     gap: 10px;
-    margin-top: 10px;
+    margin-bottom: 25px;
 }
 
-.dailyItem {
-    background: white;
-    padding: 1rem;
-    border-radius: 12px;
+#cityInput {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 50px;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    background: #4f46e5;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover { background: #4338ca; }
+#locationBtn { background: #10b981; }
+#locationBtn:hover { background: #0da271; }
+
+.favoritesSection { margin-bottom: 25px; }
+.favoritesSection h3 { margin-bottom: 10px; color: #444; }
+
+#favoritesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.favoriteItem {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    border: 1px solid #e2e8f0;
 }
 
-.dayName {
-    font-weight: bold;
-    color: #555;
-    width: 50px;
+.favoriteItem button {
+    padding: 6px 12px;
+    font-size: 14px;
+    background: #ef4444;
 }
 
-.dayIcon {
-    font-size: 1.2rem;
+.favoriteItem button:hover { background: #dc2626; }
+
+.weatherInfo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
 }
 
-.dayTemp {
-    font-size: 0.9rem;
+.tempMain {
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: #1f2937;
+}
+
+.cityName {
+    font-size: 1.5rem;
+    color: #374151;
+    margin-bottom: 10px;
+}
+
+.detailsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.detail {
+    background: #f3f4f6;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.forecast {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #f1f1f1;
+}
+
+#forecastDays {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.forecastDay {
+    text-align: center;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
     color: #666;
 }
 
-.dayTemp strong {
-    color: #333;
-}
-
-.bg-sunny { background: linear-gradient(180deg, #ffce67 0%, #ffa200 100%); }
-.bg-cloudy { background: linear-gradient(180deg, #bdc3c7 0%, #2c3e50 100%); }
-.bg-rainy { background: linear-gradient(180deg, #4b6cb7 0%, #182848 100%); }
-.bg-default { background: #f0f0f0; } 
-
-.locationRow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.btnIcon {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-.favoritesContainer {
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.favList {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding: 10px 0;
-}
-
-.favItem {
-    background: #ffffff;
-    border: 1px solid #ddd;
-    padding: 8px 16px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.favItem:hover {
-    background: #e0f2fe; /* Color azul clarito al pasar el ratón */
-    transform: translateY(-2px);
-}
-
-.favItem:active {
-    transform: scale(0.95);
-}
-
-.hidden { display: none; }
-
-.chartSection {
-    padding: 15px;
-    margin: 15px 0;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.chartWrapper {
-    position: relative;
-    width: 100%;
-    height: 250px;
-}
-
-.chartSection h3 {
-    font-size: 1.1rem;
-    color: #444;
-    margin-bottom: 15px;
-    text-align: left;
+@media (max-width: 640px) {
+    .weatherInfo, .detailsGrid {
+        grid-template-columns: 1fr;
+    }
+    .tempMain { font-size: 2.5rem; }
 }

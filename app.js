@@ -1,281 +1,217 @@
-const defaultLat = 40.4168;
-const defaultLon = -3.7038;
+// =============== CONFIGURACIÓN ===============
+const API_BASE = 'https://api.open-meteo.com/v1';
+const GEO_API = 'https://geocoding-api.open-meteo.com/v1';
+const STORAGE_KEY = 'weatherFavorites';
 
-async function initApp() {
-    // 1. Dibujar los favoritos que ya existan en localStorage
-    renderFavorites();
+// =============== CACHE DE ELEMENTOS ===============
+const elements = {
+    cityInput: document.getElementById('cityInput'),
+    searchBtn: document.getElementById('searchBtn'),
+    locationBtn: document.getElementById('locationBtn'),
+    currentWeather: document.getElementById('currentWeather'),
+    forecastDays: document.getElementById('forecastDays'),
+    favoritesList: document.getElementById('favoritesList'),
+    loading: document.getElementById('loading')
+};
 
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                getWeatherData(latitude, longitude);
-            },
-            (error) => {
-                console.warn("Permiso denegado o error de ubicación, usando Madrid.");
-                getWeatherData(defaultLat, defaultLon);
-            },
-            { timeout: 5000 } // Si en 5 segundos no responde, salta al error (Madrid)
-        );
-    } else {
-        getWeatherData(defaultLat, defaultLon);
-    }
+let currentCity = null;
+
+// =============== UTILIDADES ===============
+const showLoading = (show) => elements.loading.style.display = show ? 'block' : 'none';
+
+const getFavorites = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+const saveFavorites = (favs) => localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
+
+const weatherIcons = {
+    0: '☀️', 1: '⛅', 2: '⛅', 3: '☁️',
+    45: '🌫️', 48: '🌫️',
+    51: '🌦️', 53: '🌦️', 55: '🌦️',
+    61: '🌧️', 63: '🌧️', 65: '🌧️',
+    71: '🌨️', 73: '🌨️', 75: '🌨️',
+    80: '🌦️', 81: '🌦️', 82: '🌦️',
+    95: '⛈️', 96: '⛈️', 99: '⛈️'
+};
+
+// =============== FUNCIONES API ===============
+async function getCityCoords(city) {
+    const res = await fetch(`${GEO_API}/search?name=${city}&count=1&language=es`);
+    const data = await res.json();
+    if (!data.results?.[0]) throw new Error('Ciudad no encontrada');
+    return data.results[0];
 }
 
-async function getWeatherData(lat, lon) {
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
-    const cityUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
-    try {
-        const [weatherRes, cityRes] = await Promise.all([
-            fetch(weatherUrl),
-            fetch(cityUrl)
-        ]);
-
-        const weatherData = await weatherRes.json();
-        const cityData = await cityRes.json();
-
-        document.getElementById('cityName').textContent = cityData.city || cityData.locality || "Ubicación desconocida";
-        
-        updateUI(weatherData);
-    } catch (error) {
-        console.error("Error al obtener datos:", error);
-        document.getElementById('loadingScreen').classList.add('hidden');
-        alert("Error de conexión. Inténtalo de nuevo.");
-    }
+async function getWeather(lat, lon) {
+    const url = `${API_BASE}/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`;
+    const res = await fetch(url);
+    return await res.json();
 }
 
-function updateUI(data) {
-    const currentCode = data.current.weather_code;
-
-    document.getElementById('mainTemp').textContent = Math.round(data.current.temperature_2m);
-    document.getElementById('weatherDescription').textContent = translateWeatherCode(currentCode);
-
-    updateBackground(currentCode);
-
-    const loader = document.getElementById('loadingScreen');
-    setTimeout(() => {
-        loader.classList.add('hidden');
-    }, 800);
-
-    const hourlyContainer = document.getElementById('hourlyContainer');
-    hourlyContainer.innerHTML = "";
-    const now = new Date().getHours();
-    for (let i = now; i < now + 6; i++) {
-        if (!data.hourly.time[i]) break;
-        const time = data.hourly.time[i].split("T")[1];
-        const temp = Math.round(data.hourly.temperature_2m[i]);
-        
-        hourlyContainer.innerHTML += `
-            <div class="hourlyItem">
-                <p>${time}</p>
-                <p><strong>${temp}°C</strong></p>
-            </div>
-        `;
-    }
-
-    const dailyContainer = document.getElementById('dailyContainer');
-    dailyContainer.innerHTML = ""; 
-    for (let i = 0; i < 7; i++) {
-        const dateRaw = data.daily.time[i];
-        const maxTemp = Math.round(data.daily.temperature_2m_max[i]);
-        const minTemp = Math.round(data.daily.temperature_2m_min[i]);
-        const code = data.daily.weather_code[i];
-
-        dailyContainer.innerHTML += `
-            <div class="dailyItem">
-                <span class="dayName">${formatDay(dateRaw)}</span>
-                <span class="dayIcon">${translateWeatherCode(code)}</span>
-                <span class="dayTemp"><strong>${maxTemp}°</strong> / ${minTemp}°</span>
-            </div>
-        `;
-    }
-
-    updateChart(data.hourly.time, data.hourly.temperature_2m);
-}
-
-function formatDay(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase();
-}
-
-function translateWeatherCode(code) {
-    const codes = {
-        0: "Cielo despejado ☀️",
-        1: "Principalmente despejado",
-        2: "Parcialmente nublado",
-        3: "Nublado ☁️",
-        45: "Niebla 🌫️",
-        48: "Niebla con escarcha",
-        51: "Llovizna ligera 🌧️",
-        53: "Llovizna moderada",
-        55: "Llovizna intensa",
-        56: "Llovizna ligera helada",
-        57: "Llovizna intensa helada",
-        61: "Lluvia débil 🌧️",
-        63: "Lluvia moderada",
-        65: "Lluvia intensa",
-        66: "Lluvia helada ligera",
-        67: "Lluvia helada intensa",
-        71: "Nieve ligera ❄️",
-        73: "Nieve moderada",
-        75: "Nieve intensa",
-        77: "Granizo",
-        80: "Chubascos ligeros 🌦️",
-        81: "Chubascos moderados",
-        82: "Chubascos fuertes",
-        85: "Nevadas ligeras",
-        86: "Nevadas intensas",
-        95: "Tormenta eléctrica ⛈️",
-        96: "Tormenta con granizo ligero",
-        99: "Tormenta con granizo intenso"
-    };
-    return codes[code] || "Clima variado";
-}
-
-document.getElementById('searchBtn').addEventListener('click', async () => {
-    const city = document.getElementById('cityInput').value;
-    if (!city) return;
-
-    try {
-        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=es&format=json`;
-        const res = await fetch(geoUrl);
-        const data = await res.json();
-
-        if (data.results && data.results.length > 0) {
-            const { latitude, longitude, name } = data.results[0];
-            getWeatherData(latitude, longitude);
-            document.getElementById('cityName').textContent = name;
-        } else {
-            alert("Ciudad no encontrada");
-        }
-    } catch (e) {
-        console.error("Error buscando ciudad", e);
-    }
-});
-
-function updateBackground(code) {
-    const body = document.body;
-    body.className = ""; 
+// =============== RENDERIZADO ===============
+function renderCurrentWeather(data, cityInfo) {
+    const w = data.current;
+    currentCity = { ...cityInfo, temp: Math.round(w.temperature_2m) };
     
-    if (code === 0) body.classList.add('bg-sunny');
-    else if (code >= 1 && code <= 3) body.classList.add('bg-cloudy');
-    else if (code >= 51 && code <= 67) body.classList.add('bg-rainy');
-    else body.classList.add('bg-default');
+    elements.currentWeather.innerHTML = `
+        <div class="weather-info">
+            <div>
+                <div class="city-name">${cityInfo.name}, ${cityInfo.country}</div>
+                <div class="temp-main">${Math.round(w.temperature_2m)}°C</div>
+                <div>${weatherIcons[w.weather_code] || '🌀'}</div>
+                <button onclick="toggleFavorite()" class="fav-btn">
+                    ${isFavorite(cityInfo.name, cityInfo.country) ? '❤️ En favoritos' : '🤍 Añadir a favoritos'}
+                </button>
+            </div>
+            <div class="details-grid">
+                <div class="detail">Sensación: ${Math.round(w.apparent_temperature)}°C</div>
+                <div class="detail">Humedad: ${w.relative_humidity_2m}%</div>
+                <div class="detail">Viento: ${Math.round(w.wind_speed_10m)} km/h</div>
+                <div class="detail">Lluvia: ${w.precipitation} mm</div>
+            </div>
+        </div>
+    `;
 }
 
+function renderForecast(data) {
+    const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    let html = '';
+    
+    data.daily.time.forEach((date, i) => {
+        if (i > 0 && i < 6) { // Mostrar próximos 5 días (no hoy)
+            const dayName = days[new Date(date).getDay()];
+            html += `
+                <div class="forecast-day">
+                    <div><strong>${dayName}</strong></div>
+                    <div>${weatherIcons[data.daily.weather_code[i]] || '🌀'}</div>
+                    <div>${Math.round(data.daily.temperature_2m_max[i])}°</div>
+                    <small>${Math.round(data.daily.temperature_2m_min[i])}°</small>
+                </div>
+            `;
+        }
+    });
+    
+    elements.forecastDays.innerHTML = html;
+}
 
-let favorites = JSON.parse(localStorage.getItem('weatherFavs')) || [];
+// =============== FAVORITOS ===============
+function isFavorite(name, country) {
+    return getFavorites().some(f => f.name === name && f.country === country);
+}
 
 function toggleFavorite() {
-    const cityName = document.getElementById('cityName').textContent;
-    if (cityName === "Detectando ubicación..." || cityName === "Ubicación desconocida") return;
-
-    const index = favorites.indexOf(cityName);
-    if (index === -1) {
-        favorites.push(cityName);
+    if (!currentCity) return;
+    
+    const favs = getFavorites();
+    const exists = favs.findIndex(f => 
+        f.name === currentCity.name && f.country === currentCity.country);
+    
+    if (exists > -1) {
+        favs.splice(exists, 1);
+        alert(`❌ ${currentCity.name} eliminado de favoritos`);
     } else {
-        favorites.splice(index, 1);
+        favs.push({
+            ...currentCity,
+            added: new Date().toISOString()
+        });
+        alert(`⭐ ${currentCity.name} añadido a favoritos!`);
     }
-
-    localStorage.setItem('weatherFavs', JSON.stringify(favorites));
+    
+    saveFavorites(favs);
     renderFavorites();
+    renderCurrentWeather({ current: currentCity }, currentCity); // Actualizar botón
 }
 
 function renderFavorites() {
-    const container = document.getElementById('favoritesSection');
-    const list = document.getElementById('favoritesList');
+    const favs = getFavorites();
     
-    if (favorites.length === 0) {
-        container.classList.add('hidden');
+    if (favs.length === 0) {
+        elements.favoritesList.innerHTML = '<p style="color:#666">No hay ciudades favoritas</p>';
         return;
     }
-
-    container.classList.remove('hidden');
-    list.innerHTML = '';
-
-    favorites.forEach(city => {
-        const button = document.createElement('button');
-        button.className = 'favItem';
-        button.textContent = city;
-        
-        button.onclick = () => loadCityByName(city);
-        
-        list.appendChild(button);
-    });
+    
+    elements.favoritesList.innerHTML = favs.map(fav => `
+        <div class="favorite-item">
+            <div>
+                <strong>${fav.name}</strong><br>
+                <small>${fav.country} • ${fav.temp}°C</small>
+            </div>
+            <div>
+                <button onclick="loadCity('${fav.name}')" title="Cargar">🔍</button>
+                <button onclick="removeFavorite('${fav.name}', '${fav.country}')" title="Eliminar">🗑️</button>
+            </div>
+        </div>
+    `).join('');
 }
 
-async function loadCityByName(cityName) {
-    const loader = document.getElementById('loadingScreen');
-    loader.classList.remove('hidden'); // Mostrar carga
+function loadCity(cityName) {
+    elements.cityInput.value = cityName;
+    searchWeather();
+}
 
+function removeFavorite(name, country) {
+    if (!confirm(`¿Eliminar ${name} de favoritos?`)) return;
+    
+    const favs = getFavorites().filter(f => 
+        !(f.name === name && f.country === country));
+    
+    saveFavorites(favs);
+    renderFavorites();
+}
+
+// =============== FUNCIONES PRINCIPALES ===============
+async function searchWeather() {
+    const city = elements.cityInput.value.trim();
+    if (!city) return alert('Escribe una ciudad');
+    
     try {
-        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=es&format=json`;
-        const res = await fetch(geoUrl);
-        const data = await res.json();
+        showLoading(true);
+        const cityInfo = await getCityCoords(city);
+        const weatherData = await getWeather(cityInfo.latitude, cityInfo.longitude);
+        
+        renderCurrentWeather(weatherData, cityInfo);
+        renderForecast(weatherData);
+        showLoading(false);
+    } catch (err) {
+        showLoading(false);
+        elements.currentWeather.innerHTML = `<div style="color:#ef4444; text-align:center; padding:20px;">Error: ${err.message}</div>`;
+    }
+}
 
-        if (data.results && data.results.length > 0) {
-            const { latitude, longitude, name } = data.results[0];
+function getLocationWeather() {
+    if (!navigator.geolocation) return alert('Tu navegador no soporta geolocalización');
+    
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            showLoading(true);
+            const { latitude, longitude } = pos.coords;
             
-            document.getElementById('cityName').textContent = name;
-            await getWeatherData(latitude, longitude);
-        } else {
-            alert("No se encontraron datos para esta ciudad.");
-            loader.classList.add('hidden');
+            // Obtener nombre de la ubicación
+            const res = await fetch(`${GEO_API}/reverse?latitude=${latitude}&longitude=${longitude}&language=es`);
+            const data = await res.json();
+            const cityInfo = data.results?.[0] || { name: 'Tu ubicación', country: '' };
+            
+            elements.cityInput.value = cityInfo.name;
+            const weatherData = await getWeather(latitude, longitude);
+            
+            renderCurrentWeather(weatherData, cityInfo);
+            renderForecast(weatherData);
+            showLoading(false);
+        } catch (err) {
+            showLoading(false);
+            alert('Error obteniendo tu ubicación');
         }
-    } catch (error) {
-        console.error("Error al buscar la ciudad favorita:", error);
-        loader.classList.add('hidden');
-    }
+    }, () => alert('Permiso de ubicación denegado'));
 }
 
-document.getElementById('favBtn').addEventListener('click', toggleFavorite);
+// =============== INICIALIZACIÓN ===============
+elements.searchBtn.addEventListener('click', searchWeather);
+elements.locationBtn.addEventListener('click', getLocationWeather);
+elements.cityInput.addEventListener('keypress', e => e.key === 'Enter' && searchWeather());
 
+window.addEventListener('DOMContentLoaded', () => {
+    searchWeather();
+    renderFavorites();
+});
 
-let myChart = null; 
-
-function updateChart(times, temperatures) {
-    const ctx = document.getElementById('tempChart').getContext('2d');
-
-    if (myChart) {
-        myChart.destroy();
-    }
-
-    const labels = times.slice(0, 24).map(t => t.split("T")[1]);
-    const data = temperatures.slice(0, 24);
-
-    myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Temperatura (°C)',
-                data: data,
-                borderColor: '#4b6cb7',
-                backgroundColor: 'rgba(75, 108, 183, 0.2)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: { beginAtZero: false },
-                x: {
-                    grid: { display: false },
-                    ticks: {
-                        callback: function(val, index) {
-                            return index % 4 === 0 ? this.getLabelForValue(val) : '';
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-initApp();
+setInterval(() => {
+    if (getFavorites().length > 0) renderFavorites();
+}, 600000);
