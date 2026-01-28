@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App del Tiempo Simple</title>
+    <link rel="stylesheet" href="deepseek.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cloud-sun"></i> Clima Ahora</h1>
+            <p class="subtitle">Consulta el tiempo en cualquier ciudad</p>
+        </header>
+
+        <main>
+            <div class="search-box">
+                <input type="text" id="cityInput" placeholder="Ej: Madrid, Londres, Tokyo...">
+                <button id="searchBtn">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+                <button id="locationBtn">
+                    <i class="fas fa-location-arrow"></i> Mi Ubicación
+                </button>
+            </div>
+
+            <!-- Añade esto después del search-box y antes del weather-container -->
+            <div class="favorites-section">
+                <h3><i class="fas fa-star"></i> Ciudades Favoritas</h3>
+                <div class="favorites-container" id="favoritesContainer">
+                    <!-- Las ciudades favoritas aparecerán aquí -->
+                </div>
+                <p class="empty-favorites" id="emptyFavorites">Aún no tienes ciudades favoritas</p>
+            </div>
+
+            <div class="weather-container">
+                <!-- Clima actual -->
+                <div class="current-weather" id="currentWeather">
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Cargando datos...</p>
+                    </div>
+                    <!-- Los datos se insertarán aquí con JavaScript -->
+                </div>
+
+                <!-- Pronóstico de 7 días -->
+                <div class="forecast" id="forecast">
+                    <h3><i class="fas fa-calendar-alt"></i> Próximos 7 días</h3>
+                    <div class="forecast-days" id="forecastDays">
+                        <!-- Los días se insertarán aquí -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Datos por <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a></p>
+        </footer>
+    </div>
+
+    <script src="deepseek.js"></script>
+</body>
+</html>

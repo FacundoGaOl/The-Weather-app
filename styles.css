@@ -34,10 +34,6 @@
     100% { transform: rotate(360deg); }
 }
 
-.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
 
 body {
     background-color: #f0f2f5;
