@@ -2,40 +2,26 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima App</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>App del Tiempo</title>
+    <link rel="stylesheet" href="gpt.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1> Clima App</h1>
-            <p class="subtitle">Consulta el tiempo en cualquier ciudad</p>
-        </header>
 
-        <div class="searchBox">
-            <input type="text" id="cityInput" placeholder="Ej: Madrid, Tokyo..." value="Madrid">
-            <button id="searchBtn">Buscar</button>
-            <button id="locationBtn" class="locationBtn">Ubicación</button>
-        </div>
+    <h1>🌤 App del Tiempo</h1>
 
-        <div class="favoritesSection" id="favoritesSection">
-            <h3>Favoritos</h3>
-            <div id="favoritesList"></div>
-        </div>
+    <p id="location">Cargando ubicación...</p>
 
-        <div class="weatherContainer">
-            <div id="currentWeather">
-                <div class="loading" id="loading">Cargando...</div>
-            </div>
-            
-            <div class="forecast">
-                <h3> Próximos días</h3>
-                <div id="forecastDays"></div>
-            </div>
-        </div>
-    </div>
+    <div id="currentWeather"></div>
 
-    <script src="app.js"></script>
+    <select id="forecastType">
+        <option value="hourly">Pronóstico por horas</option>
+        <option value="daily">Pronóstico por días</option>
+    </select>
+
+    <div id="forecast"></div>
+
+    <canvas id="weatherChart" width="600" height="300"></canvas>
+
+    <script src="gpt.js"></script>
 </body>
 </html>
