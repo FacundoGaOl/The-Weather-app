@@ -1,6 +1,3 @@
-/******************************
- * REFERENCIAS AL DOM
- ******************************/
 const locationElement = document.getElementById("location");
 const currentWeatherElement = document.getElementById("currentWeather");
 const forecastElement = document.getElementById("forecast");
@@ -10,9 +7,6 @@ let weatherData = null;
 
 let hasFetchedWeather = false;
 
-/******************************
- * FORMATEO DE FECHAS Y HORAS
- ******************************/
 function formatDateTime(dateString, type = "date") {
     const date = new Date(dateString);
     const now = new Date();
@@ -39,9 +33,6 @@ function formatDateTime(dateString, type = "date") {
     }
 }
 
-/******************************
- * CÓDIGOS METEOROLÓGICOS
- ******************************/
 function getWeatherInfo(code) {
     const weatherCodes = {
         0: ["☀️", "Despejado"],
@@ -56,12 +47,9 @@ function getWeatherInfo(code) {
         95: ["⛈", "Tormenta"]
     };
 
-    return weatherCodes[code] || ["❓", "Desconocido"];
+    return weatherCodes[code] || ["Desconocido"];
 }
 
-/******************************
- * OBTENER CIUDAD Y PAÍS
- ******************************/
 async function getCityAndCountry(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
 
@@ -79,9 +67,6 @@ async function getCityAndCountry(lat, lon) {
     return { city, country };
 }
 
-/******************************
- * OBTENER DATOS METEOROLÓGICOS
- ******************************/
 async function fetchWeather(lat, lon) {
     if (hasFetchedWeather) return;
     hasFetchedWeather = true;
@@ -110,22 +95,16 @@ async function fetchWeather(lat, lon) {
     } catch (error) {
         console.error(error);
         currentWeatherElement.innerHTML =
-            "<p>⚠️ Demasiadas peticiones. Espera unos minutos.</p>";
+            "<p>Demasiadas peticiones. Espera unos minutos.</p>";
     }
 
     const DEV_MODE = true;
 if (DEV_MODE) {
-    locationElement.textContent = "📍 A Coruña, España";
+    locationElement.textContent = "A Coruña, España";
     fetchWeather(43.3623, -8.4115);
 }
 }
 
-
-
-
-/******************************
- * MOSTRAR TIEMPO ACTUAL
- ******************************/
 function displayCurrentWeather(data) {
     if (!data.current_weather) {
         currentWeatherElement.innerHTML =
@@ -144,9 +123,6 @@ function displayCurrentWeather(data) {
     `;
 }
 
-/******************************
- * MOSTRAR PRONÓSTICO
- ******************************/
 function displayForecast(data) {
     forecastElement.innerHTML = "";
 
@@ -191,31 +167,25 @@ function displayForecast(data) {
     }
 }
 
-/******************************
- * EVENTO SELECTOR
- ******************************/
 forecastTypeSelect.addEventListener("change", () => {
     if (weatherData) {
         displayForecast(weatherData);
     }
 });
 
-/******************************
- * GEOLOCALIZACIÓN INICIAL
- ******************************/
 navigator.geolocation.getCurrentPosition(
     async position => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
 
         const location = await getCityAndCountry(lat, lon);
-        locationElement.textContent = `📍 ${location.city}, ${location.country}`;
+        locationElement.textContent = ` ${location.city}, ${location.country}`;
 
         fetchWeather(lat, lon);
     },
     error => {
         locationElement.textContent =
-            "❌ No se pudo obtener la ubicación";
+            "No se pudo obtener la ubicación";
         console.error(error);
     }
 );
