@@ -1,26 +1,22 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #eef3f7;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing:border-box;
+    font-family: "Open Sans", "Roboto", "Inter", sans-serif;
+}
+
+header{
+    background-color: antiquewhite;
     text-align: center;
-    padding: 20px;
+    padding: 4em;
 }
 
-#forecast {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+.mainContainer {
+    text-align: center;
+    padding: 4em;
 }
 
-.card {
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    width: 120px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
-canvas {
-    margin-top: 30px;
+footer {
+    text-align: center;
+    padding: 4em;
 }

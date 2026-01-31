@@ -2,26 +2,33 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>App del Tiempo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <h1>🌤 App del Tiempo</h1>
-
-    <p id="location">Cargando ubicación...</p>
-
-    <div id="currentWeather"></div>
-
-    <select id="forecastType">
-        <option value="hourly">Pronóstico por horas</option>
-        <option value="daily">Pronóstico por días</option>
-    </select>
-
-    <div id="forecast"></div>
-
-    <canvas id="weatherChart" width="600" height="300"></canvas>
-
+    <header>
+        <h3>El tiempo en</h3>
+        <h1>Temple</h1>
+        <p>Favoritos</p>
+    </header>
+    <main class="mainContainer">
+        <section>
+            <div id="temperatureSection">
+                <h2>9º</h2>
+                <p>Temperatura actual</p>
+            </div>
+            <div>
+                <p>humedad</p>
+                <p>viento velocidad</p>
+                <p>viento dirección</p>
+                <p>indice uv</p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>Datos de <a href="https://open-meteo.com/"> Open Meteo</a></p>
+    </footer>
     <script src="app.js"></script>
 </body>
 </html>
