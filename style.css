@@ -21,7 +21,6 @@ footer {
     padding: 4em;
 }
 
-
 .details {
     margin-top: 2em;
     display: grid;
@@ -34,12 +33,10 @@ footer {
     color: #333;
 }
 
-/* seguda parte */
 body, header {
     transition: background-color 0.5s ease; /* Hace que el color cambie suavemente */
 }
 
-/*3º*/
 .recommendation {
     margin-top: 15px;
     font-size: 1.2rem;
@@ -54,7 +51,6 @@ hr {
     margin: 2em 0;
 }
 
-/* 4parte*/
 body {
     transition: all 0.8s ease;
     min-height: 100vh;
@@ -62,17 +58,13 @@ body {
     background-position: center;
 }
 
-/* Fondo de Día */
 .day-mode {
-    background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
-                      url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80');
+    background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80');
     color: #222;
 }
 
-/* Fondo de Noche */
 .night-mode {
-    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-                      url('https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1600&q=80');
+    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1600&q=80');
     color: white;
 }
 
@@ -91,7 +83,7 @@ header {
     backdrop-filter: blur(5px);
 }
 
-/* 7 parte*/
+
 .forecast-container {
     display: flex;
     justify-content: space-between;
@@ -99,7 +91,7 @@ header {
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
-    overflow-x: auto; /* Por si hay muchos días, que se pueda scrollear en móvil */
+    overflow-x: auto;
 }
 
 .forecast-item {
@@ -123,7 +115,6 @@ header {
 .max { font-weight: bold; }
 .min { opacity: 0.7; }
 
-/* octava parte*/
 main-icon {
     font-size: 4rem;
     display: block;
