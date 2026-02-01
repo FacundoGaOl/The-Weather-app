@@ -189,3 +189,4 @@ navigator.geolocation.getCurrentPosition(
         console.error(error);
     }
 );
+

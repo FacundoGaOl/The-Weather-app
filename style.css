@@ -122,3 +122,16 @@ header {
 
 .max { font-weight: bold; }
 .min { opacity: 0.7; }
+
+/* octava parte*/
+main-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.forecast-icon {
+    font-size: 1.5rem;
+    display: block;
+    margin: 0.5rem 0;
+}
