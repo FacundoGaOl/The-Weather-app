@@ -1,5 +1,5 @@
-const DEFAULT_LOCATION = { lat: 43.3713, lon: -8.396, name: "A Coruña" };
-const FAVORITES_KEY = 'weather_favs';
+const defaultLocation = { lat: 43.3713, lon: -8.396, name: "A Coruña" };
+const favoritesKey = 'weatherFavs';
 let searchTimer;
 
 const weatherIcons = {
@@ -10,7 +10,30 @@ const weatherIcons = {
 };
 
 const getWeatherIcon = (code) => weatherIcons[code] || "🌡️";
-const getFavorites = () => JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+const getFavorites = () => JSON.parse(localStorage.getItem(favoritesKey)) || [];
+
+window.selectCity = function(lat, lon, name) {
+    displayWeather(lat, lon, name);
+    document.getElementById("cityInput").value = "";
+    document.getElementById("searchResults").innerHTML = "";
+};
+
+window.deleteFavorite = function(name) {
+    const favs = getFavorites().filter(favorite => favorite.name !== name);
+    localStorage.setItem(favoritesKey, JSON.stringify(favs));
+    renderFavoritesList();
+};
+
+window.saveFavorite = function(name, lat, lon) {
+    const favs = getFavorites();
+    if (!favs.some(favorite => favorite.name === name)) {
+        favs.push({ name, lat, lon });
+        localStorage.setItem(favoritesKey, JSON.stringify(favs));
+        renderFavoritesList();
+    }
+};
+
+window.displayWeather = displayWeather;
 
 function getWeatherMessage(temp) {
     if (temp < 10) return "¡Abrígate bien, hace frío!";
@@ -24,14 +47,13 @@ async function getCityName(lat, lon) {
         const data = await response.json();
 
         return data.locality || data.city || "Ubicación Actual";
-    } catch (e) {
-        console.error("Error obteniendo ubicación exacta", e);
-        return "Culleredo"; 
+    } catch (error) {
+        console.error("Error obteniendo ubicación exacta");
     }
 }
 
-document.getElementById("cityInput").addEventListener("input", (e) => {
-    const query = e.target.value;
+document.getElementById("cityInput").addEventListener("input", (eventOnClick) => {
+    const query = eventOnClick.target.value;
     clearTimeout(searchTimer);
 
     if (query.length < 3) {
@@ -47,12 +69,12 @@ document.getElementById("cityInput").addEventListener("input", (e) => {
             
             const resultsContainer = document.getElementById("searchResults");
             resultsContainer.innerHTML = results.map(city => `
-                <div class="search-item" onclick="selectCity(${city.latitude}, ${city.longitude}, '${city.name}')">
+                <div class="searchItem" onclick="selectCity(${city.latitude}, ${city.longitude}, '${city.name}')">
                     <strong>${city.name}</strong> (${city.country})
                 </div>
             `).join('');
         } catch (e) {
-            console.error("Error buscando ciudad", e);
+            console.error("Tal vez tengas el mapa al reves?");
         }
     }, 500);
 });
@@ -68,26 +90,11 @@ function renderFavoritesList() {
     const favs = getFavorites();
 
     favContainer.innerHTML = favs.map(fav => `
-        <div class="fav-item">
+        <div class="favItem">
             <button onclick="displayWeather(${fav.lat}, ${fav.lon}, '${fav.name}')">${fav.name}</button>
-            <span class="delete-fav" onclick="deleteFavorite('${fav.name}')">❌</span>
+            <span class="deleteFav" onclick="deleteFavorite('${fav.name}')">❌</span>
         </div>
     `).join('');
-}
-
-function saveFavorite(name, lat, lon) {
-    const favs = getFavorites();
-    if (!favs.some(f => f.name === name)) {
-        favs.push({ name, lat, lon });
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
-        renderFavoritesList();
-    }
-}
-
-function deleteFavorite(name) {
-    const favs = getFavorites().filter(f => f.name !== name);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
-    renderFavoritesList();
 }
 
 async function fetchWeather(lat, lon) {
@@ -95,7 +102,7 @@ async function fetchWeather(lat, lon) {
     try {
         const response = await fetch(url);
         return response.ok ? await response.json() : null;
-    } catch (e) { return null; }
+    } catch (error) { return null; }
 }
 
 async function displayWeather(lat, lon, cityName = null) {
@@ -115,25 +122,25 @@ async function displayWeather(lat, lon, cityName = null) {
     document.getElementById("mainCityName").innerText = finalName;
 
     const { temperature_2m: temp, relative_humidity_2m: hum, wind_speed_10m: wind, is_day, weather_code: code } = data.current;
-    document.body.className = is_day ? "day-mode" : "night-mode";
+    document.body.className = is_day ? "dayMode" : "nightMode";
 
     mainContainer.innerHTML = `
-        <section class="glass-card">
+        <section class="glassCard">
             <div id="actualWeather">
-                <span class="main-icon">${getWeatherIcon(code)}</span>
+                <span class="mainIcon">${getWeatherIcon(code)}</span>
                 <h2>${Math.round(temp)}º</h2>
                 <p id="currentLocationName">${finalName}</p>
                 <p class="recommendation"><strong>${getWeatherMessage(temp)}</strong></p>
             </div>
             
-            <button class="btn-fav" onclick="saveFavorite('${finalName}', ${lat}, ${lon})">⭐ Guardar</button>
+            <button onclick="saveFavorite('${finalName}', ${lat}, ${lon})">⭐ Guardar</button>
 
-            <div class="forecast-container">
-                ${data.daily.time.map((date, i) => `
-                    <div class="forecast-item">
+            <div class="forecastContainer">
+                ${data.daily.time.map((date, index) => `
+                    <div class="forecastItem">
                         <p>${new Date(date).toLocaleDateString('es-ES', {weekday: 'short'})}</p>
-                        <span>${getWeatherIcon(data.daily.weather_code[i])}</span>
-                        <p>${Math.round(data.daily.temperature_2m_max[i])}º / ${Math.round(data.daily.temperature_2m_min[i])}º</p>
+                        <span>${getWeatherIcon(data.daily.weather_code[index])}</span>
+                        <p>${Math.round(data.daily.temperature_2m_max[index])}º / ${Math.round(data.daily.temperature_2m_min[index])}º</p>
                     </div>
                 `).join('')}
             </div>
@@ -143,11 +150,11 @@ async function displayWeather(lat, lon, cityName = null) {
 
 function getCoordinates() {
     return new Promise((resolve) => {
-        if (!navigator.geolocation) return resolve(DEFAULT_LOCATION);
+        if (!navigator.geolocation) return resolve(defaultLocation);
         
         navigator.geolocation.getCurrentPosition(
             (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-            () => resolve(DEFAULT_LOCATION),
+            () => resolve(defaultLocation),
             { 
                 enableHighAccuracy: true,
                 timeout: 5000, 
