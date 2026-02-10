@@ -12,6 +12,12 @@ const weatherIcons = {
 const getWeatherIcon = (code) => weatherIcons[code] || "🌡️";
 const getFavorites = () => JSON.parse(localStorage.getItem(favoritesKey)) || [];
 
+const cityOverrides = {
+    "Muy Fiel y Reconquistadora Ciudad de San Felipe y Santiago de Montevideo": "Montevideo",
+};
+
+const sanitizeCityName = (name) => cityOverrides[name] || name;
+
 window.selectCity = function(lat, lon, name) {
     displayWeather(lat, lon, name);
     document.getElementById("cityInput").value = "";
@@ -68,22 +74,18 @@ document.getElementById("cityInput").addEventListener("input", (eventOnClick) =>
             const results = data.results || [];
             
             const resultsContainer = document.getElementById("searchResults");
-            resultsContainer.innerHTML = results.map(city => `
-                <div class="searchItem" onclick="selectCity(${city.latitude}, ${city.longitude}, '${city.name}')">
+            resultsContainer.innerHTML = results.map(city =>{
+                const nameToShow = sanitizeCityName(city.name);
+                return `
+                <div class="searchItem" onclick="selectCity(${city.latitude}, ${city.longitude}, '${nameToShow}')">
                     <strong>${city.name}</strong> (${city.country})
                 </div>
-            `).join('');
+            `;}).join('');
         } catch (e) {
             console.error("Tal vez tengas el mapa al reves?");
         }
     }, 500);
 });
-
-function selectCity(lat, lon, name) {
-    displayWeather(lat, lon, name);
-    document.getElementById("cityInput").value = "";
-    document.getElementById("searchResults").innerHTML = "";
-}
 
 function renderFavoritesList() {
     const favContainer = document.getElementById("favoritesList");
@@ -118,6 +120,8 @@ async function displayWeather(lat, lon, cityName = null) {
     if (!finalName) {
         finalName = await getCityName(lat, lon) || data.timezone.split('/').pop().replace('_', ' ');
     }
+
+    finalName = sanitizeCityName(finalName);
 
     document.getElementById("mainCityName").innerText = finalName;
 
